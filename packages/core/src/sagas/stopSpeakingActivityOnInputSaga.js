@@ -11,7 +11,7 @@ function* stopSpeakingActivityOnInput() {
     ({ meta, payload, type }) =>
       type === START_DICTATE ||
       (type === SET_SEND_BOX && payload.text) ||
-      // We want to stop speaking activity when the user click on a card action
+      // We want to stop speaking activity when the user clicks on a card action
       // But currently there are no actions generated out of a card action
       // So, right now, we are using best-effort by listening to POST_ACTIVITY_PENDING with a "message" event
       // We filter out speech because we will call startSpeakingActivity() for POST_ACTIVITY_PENDING dispatched by speech
