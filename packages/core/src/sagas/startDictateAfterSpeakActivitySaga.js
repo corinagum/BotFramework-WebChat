@@ -14,7 +14,7 @@ function* startDictateAfterAllActivitiesSpoken({ payload: { activityID } }) {
   if (
     spokenActivity &&
     spokenActivity.inputHint !== 'ignoringInput' &&
-    // Checks if there are no more activities that will be synthesis
+    // Checks if there are no more activities that will be synthesized
     !activities.some(activity => activity.id !== activityID && speakingActivity(activity))
   ) {
     // We honor input hint based on this article
