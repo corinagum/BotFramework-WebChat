@@ -126,6 +126,7 @@ const Composer = ({
   attachmentRenderer,
   cardActionMiddleware,
   children,
+  dir,
   directLine,
   disabled,
   extraStyleSet,
@@ -265,6 +266,7 @@ const Composer = ({
       activityStatusRenderer,
       attachmentRenderer,
       dictateAbortable,
+      dir,
       directLine,
       disabled,
       grammars: patchedGrammars,
@@ -286,6 +288,7 @@ const Composer = ({
       attachmentRenderer,
       cardActionContext,
       dictateAbortable,
+      dir,
       directLine,
       disabled,
       focusSendBoxContext,
@@ -351,6 +354,7 @@ Composer.defaultProps = {
   attachmentRenderer: undefined,
   cardActionMiddleware: undefined,
   children: undefined,
+  dir: 'auto',
   disabled: false,
   extraStyleSet: undefined,
   grammars: [],
@@ -375,6 +379,7 @@ Composer.propTypes = {
   attachmentRenderer: PropTypes.func,
   cardActionMiddleware: PropTypes.func,
   children: PropTypes.any,
+  dir: PropTypes.oneOf(['auto', 'ltr', 'rtl']),
   directLine: PropTypes.shape({
     activity$: PropTypes.shape({
       subscribe: PropTypes.func.isRequired
