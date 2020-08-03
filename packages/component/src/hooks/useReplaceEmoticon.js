@@ -10,7 +10,7 @@ export default function useReplaceEmoticon() {
 
   return useCallback(
     valueWithEmoticon => {
-      const escapedEmoticonRegExp =
+      const emoticonsWithEscapes =
         Object.prototype.toString.call(emojiSet) === '[object Object]' &&
         Object.keys(emojiSet)
           .sort()
@@ -19,7 +19,7 @@ export default function useReplaceEmoticon() {
 
       const emojiRegExp =
         Object.prototype.toString.call(emojiSet) === '[object Object]'
-          ? new RegExp(escapedEmoticonRegExp, 'gmu')
+          ? new RegExp(emoticonsWithEscapes, 'gmu')
           : /([()-/03:;<DOP\\op|]{2,3})/gmu;
 
       const emoticonMatches = valueWithEmoticon.match(emojiRegExp);

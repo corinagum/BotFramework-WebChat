@@ -4,6 +4,7 @@ import useAvatarForBot from './useAvatarForBot';
 import useAvatarForUser from './useAvatarForUser';
 import useByteFormatter from './useByteFormatter';
 import useConnectivityStatus from './useConnectivityStatus';
+import useCursorLocation from './useCursorLocation';
 import useDateFormatter from './useDateFormatter';
 import useDebouncedNotifications from './useDebouncedNotifications';
 import useDictateInterims from './useDictateInterims';
@@ -12,6 +13,7 @@ import useDirection from './useDirection';
 import useDisabled from './useDisabled';
 import useDismissNotification from './useDismissNotification';
 import useEmitTypingIndicator from './useEmitTypingIndicator';
+import useEmojiEmoticonHistory from './useEmojiEmoticonHistory';
 import useFocus from './useFocus';
 import useFocusSendBox from './useFocusSendBox';
 import useGrammars from './useGrammars';
@@ -75,6 +77,7 @@ export {
   useAvatarForUser,
   useByteFormatter,
   useConnectivityStatus,
+  useCursorLocation,
   useDateFormatter,
   useDebouncedNotifications,
   useDictateInterims,
@@ -83,6 +86,7 @@ export {
   useDisabled,
   useDismissNotification,
   useEmitTypingIndicator,
+  useEmojiEmoticonHistory,
   useFocus,
   useFocusSendBox,
   useGrammars,
