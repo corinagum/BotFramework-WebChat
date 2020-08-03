@@ -2,13 +2,12 @@
 
 import { useCallback } from 'react';
 
+import useSendBoxValue from './useSendBoxValue';
 import escapeRegexp from '../Utils/escapeRegexp';
 import useStyleOptions from './useStyleOptions';
-import useEmojiEmoticonHistory from './useEmojiEmoticonHistory';
 
 export default function useReplaceEmoticon() {
   const [{ emojiSet }] = useStyleOptions();
-  const [, setEmojiEmoticonHistory] = useEmojiEmoticonHistory();
 
   return useCallback(
     valueWithEmoticon => {
@@ -30,7 +29,6 @@ export default function useReplaceEmoticon() {
 
       if (!!emojiSet && emoticonMatches) {
         emoticonMatches.forEach(emoticon => {
-          const index = valueWithEmoticon.indexOf(emoticon);
           const escapeString = escapeRegexp('\\' + emoticon);
           const emoticonEscapeStringRegExp = new RegExp(escapeString, 'gm');
 
@@ -44,7 +42,6 @@ export default function useReplaceEmoticon() {
           if (emojiSet[emoticon]) {
             valueWithEmoji = valueWithEmoji.replace(emoticon, emojiSet[emoticon]);
           }
-          setEmojiEmoticonHistory({ emoji: emojiSet[emoticon], emoticon, index, type: 'add' });
         });
       }
       return valueWithEmoji;

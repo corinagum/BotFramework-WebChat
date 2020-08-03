@@ -6,7 +6,10 @@ import React, { useCallback } from 'react';
 import { Context as TypeFocusSinkContext } from '../Utils/TypeFocusSink';
 import AccessibleInputText from '../Utils/AccessibleInputText';
 import AccessibleTextArea from '../Utils/AccessibleTextArea';
+// import escapeRegexp from '../Utils/escapeRegexp';
 import connectToWebChat from '../connectToWebChat';
+import useCursorLocation from '../hooks/useCursorLocation';
+import useEmojiEmoticonHistory from '../hooks/useEmojiEmoticonHistory';
 import useDisabled from '../hooks/useDisabled';
 import useFocus from '../hooks/useFocus';
 import useLocalizer from '../hooks/useLocalizer';
@@ -67,10 +70,33 @@ const connectSendTextBox = (...selectors) =>
   );
 
 function useTextBoxSubmit() {
-  const [sendBoxValue] = useSendBoxValue();
+  // const [{ escapedEmoticonToEmoticonSet }] = useStyleOptions();
+  const [sendBoxValue, setSendBox] = useSendBoxValue();
   const focus = useFocus();
   const scrollToEnd = useScrollToEnd();
   const submitSendBox = useSubmitSendBox();
+
+  // const regexpString =
+  //   escapedEmoticonToEmoticonSet &&
+  //   Object.keys(escapedEmoticonToEmoticonSet)
+  //     .sort()
+  //     .map(escapeRegexp)
+  //     .join('|');
+  // const escapedEmoticonRegExp = regexpString && new RegExp(regexpString, 'gmu');
+
+  // const emoticonMatches = escapedEmoticonRegExp && sendBoxValue.match(escapedEmoticonRegExp);
+  // let submittableSendBoxValue = sendBoxValue;
+  // console.log(submittableSendBoxValue);
+
+  // if (emoticonMatches) {
+  //   emoticonMatches.forEach(escapedEmoticon => {
+  //     submittableSendBoxValue = sendBoxValue.replace(escapedEmoticon, escapedEmoticonToEmoticonSet[escapedEmoticon]);
+  //   });
+  // }
+
+  // console.log(submittableSendBoxValue);
+  // DOESN'T WORK
+  // setSendBox(submittableSendBoxValue)
 
   return useCallback(
     setFocus => {
@@ -98,6 +124,7 @@ function useTextBoxSubmit() {
 }
 
 function useTextBoxValue() {
+  // const [emojiEmoticonHistory, setEmojiEmoticonHistory] = useEmojiEmoticonHistory();
   const [value, setSendBox] = useSendBoxValue();
   const stopDictate = useStopDictate();
   const replaceEmoticon = useReplaceEmoticon();
@@ -117,6 +144,7 @@ function useTextBoxValue() {
 const PREVENT_DEFAULT_HANDLER = event => event.preventDefault();
 
 const TextBox = ({ className }) => {
+  const cursorIndex = useCursorLocation();
   const [{ sendBoxTextWrap }] = useStyleOptions();
   const [{ sendBoxTextArea: sendBoxTextAreaStyleSet, sendBoxTextBox: sendBoxTextBoxStyleSet }] = useStyleSet();
   const [disabled] = useDisabled();
@@ -128,7 +156,7 @@ const TextBox = ({ className }) => {
   const typeYourMessageString = localize('TEXT_INPUT_PLACEHOLDER');
 
   const handleChange = useCallback(
-    ({ target: { value } }) => {
+    ({ ctrlKey, key, target: { value } }) => {
       setTextBoxValue(value);
     },
     [setTextBoxValue]

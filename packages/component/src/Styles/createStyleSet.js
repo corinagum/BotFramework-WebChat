@@ -41,6 +41,7 @@ import createWarningNotificationStyle from './StyleSet/WarningNotification';
 import createYouTubeContentStyle from './StyleSet/YouTubeContent';
 
 import defaultStyleOptions from './defaultStyleOptions';
+import escapeRegexp from '../Utils/escapeRegexp';
 
 // TODO: [P4] We should add a notice for people who want to use "styleSet" instead of "styleOptions".
 //       "styleSet" is actually CSS stylesheet and it is based on the DOM tree.
@@ -202,6 +203,16 @@ export default function createStyleSet(options) {
   } else if (Object.prototype.toString.call(options.emojiSet) !== '[object Object]') {
     console.warn('emojiSet must be a boolean or an object with emoticon: emojiValues');
     options.emojiSet = false;
+  }
+
+  if (!!options.emojiSet) {
+    options.emoticonToEscapedEmoticonSet = {};
+    options.escapedEmoticonToEmoticonSet = {};
+    Object.keys(options.emojiSet).forEach(emoticon => {
+      let escapeText = '\\' + escapeRegexp(emoticon);
+      options.emoticonToEscapedEmoticonSet['\\' + emoticon] = escapeText;
+      options.escapedEmoticonToEmoticonSet[escapeText] = emoticon;
+    });
   }
 
   return {
