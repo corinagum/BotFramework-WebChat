@@ -44,7 +44,7 @@ First let's set up the project.
 ```sh
 cd C:\Users\You\Documents
 npx create-react-app06.recomposing-ui/a.minimizable-web-chat
-cd06.recomposing-ui/a.minimizable-web-chat
+cd 06.recomposing-ui/a.minimizable-web-chat
 npm i botframework-webchat
 ```
 

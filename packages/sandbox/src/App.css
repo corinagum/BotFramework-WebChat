@@ -15,6 +15,13 @@ body {
   flex-direction: row;
 }
 
+#app-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: row;
+}
+
 .button-bar {
   backdrop-filter: blur(2px);
   background-color: rgba(255, 255, 255, .8);
@@ -25,16 +32,25 @@ body {
   padding: 10px;
 }
 
-.button-bar > button {
+fieldset {
+  display: flex;
+  flex-direction: column;
+}
+fieldset > label > select {
+  margin-left: 5px;
+}
+fieldset > button {
+
   background-color: rgba(128, 128, 128, .2);
   border: 0;
   height: 25px;
   margin-bottom: 10px;
   outline: 0;
   padding: '5px 10px';
+  width: 100%;
 }
 
-.button-bar > button:hover {
+fieldset > button:hover {
   background-color: rgba(0, 0, 0, .2);
   color: 'White'
 }
