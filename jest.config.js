@@ -13,6 +13,8 @@ module.exports = {
   globals: {
     npm_package_version: '0.0.0-0.jest'
   },
+  // We only have 4 instances of Chromium running simultaneously.
+  maxWorkers: 4,
   moduleDirectories: ['node_modules', 'packages'],
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   reporters: [
@@ -45,44 +47,56 @@ module.exports = {
             // - https://github.com/no23reason/jest-trx-results-processor/tree/master/src
 
             testResult.failureMessages.forEach(message => {
-              const match = /^See diff for details: (.*)/m.exec(message);
+              const pattern = /See (diff|screenshot) for details: (.*)/gmu;
 
-              match &&
-                testResultNode
-                  .ele('ResultFiles')
-                  .ele('ResultFile')
-                  .att('path', match[1]);
+              for (;;) {
+                const match = pattern.exec(message);
+
+                if (!match) {
+                  break;
+                }
+
+                testResultNode.ele('ResultFiles').ele('ResultFile').att('path', match[2]);
+              }
             });
 
-            testResultNode.att('testName', `${relative(__dirname, testSuiteResult.testFilePath)} › ${testResult.fullName}`);
+            testResultNode.att(
+              'testName',
+              `${relative(__dirname, testSuiteResult.testFilePath)} › ${testResult.fullName}`
+            );
           }
         ]
       }
     ],
-    ['./__tests__/setup/NUnitTestReporter', {
-      filename: join(__dirname, 'coverage/nunit3.xml'),
-      jestResultFilename: join(__dirname, 'coverage/jest.json')
-    }]
+    [
+      './__tests__/setup/NUnitTestReporter',
+      {
+        filename: join(__dirname, 'coverage/nunit3.xml'),
+        jestResultFilename: join(__dirname, 'coverage/jest.json')
+      }
+    ]
   ],
   setupFilesAfterEnv: [
     '<rootDir>/__tests__/setup/setupDotEnv.js',
     '<rootDir>/__tests__/setup/setupGlobalAgent.js',
     '<rootDir>/__tests__/setup/preSetupTestFramework.js',
     '<rootDir>/__tests__/setup/setupImageSnapshot.js',
-    '<rootDir>/__tests__/setup/setupTimeout.js',
-    '<rootDir>/__tests__/html/__jest__/setupRunHTMLTest.js'
+    '<rootDir>/__tests__/setup/setupTimeout.js'
   ],
   testPathIgnorePatterns: [
-    '<rootDir>/__tests__/html/assets',
+    '/lib/',
+    '/node_modules/',
     '<rootDir>/__tests__/html/__dist__',
     '<rootDir>/__tests__/html/__jest__',
-    '<rootDir>/__tests__/types/__typescript__',
+    '<rootDir>/__tests__/html/assets',
     '<rootDir>/__tests__/setup/',
+    '<rootDir>/__tests__/types/__typescript__',
     '<rootDir>/packages/directlinespeech/__tests__/utilities/',
     '<rootDir>/packages/playground/',
     '<rootDir>/samples/'
   ],
   transform: {
+    '[\\/]__tests__[\\/]html[\\/]': './babel-passthru-transformer.js',
     '\\.[jt]sx?$': './babel-jest-config.js'
   }
 };
