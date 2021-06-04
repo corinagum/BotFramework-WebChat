@@ -1,3 +1,5 @@
+import DirectLineActivity from './types/external/DirectLineActivity';
+
 type StyleOptions = {
   /**
    * Basic styling
@@ -219,7 +221,10 @@ type StyleOptions = {
 
   /**
    * Prevent scroll to end button from rendering
+   *
+   * @deprecated Since 4.14.0: To hide the scroll to end button, please set `scrollToEndButtonBehavior` to `false`.
    */
+  // TODO: [P4] Will be removed on or after 2023-06-02.
   hideScrollToEndButton?: boolean;
 
   /**
@@ -380,8 +385,16 @@ type StyleOptions = {
    * Timestamp
    */
 
-  groupTimestamp?: boolean;
-  sendTimeout?: number;
+  /**
+   * Specifies the time window for grouping related timestamps.
+   *
+   * `number` - time window for grouping related timestamps (in milliseconds)
+   * `false` - never group timestamps
+   * `true` - group all timestamps
+   */
+  groupTimestamp?: boolean | number;
+
+  sendTimeout?: number | ((activity: DirectLineActivity) => number);
   sendTimeoutForAttachments?: number;
 
   /**
@@ -413,7 +426,26 @@ type StyleOptions = {
    * e.g. carousel and suggested action flippers, scroll to bottom, etc.
    */
 
+  /**
+   * Controls when the new messages button should show.
+   *
+   * - `"unread"` will show when there are any unread and offscreen messages (default)
+   * - `"any"` will show when there are any offscreen messages
+   * - `false` will always hide the button
+   */
+  scrollToEndButtonBehavior?: false | 'any' | 'unread';
+
+  /** Font size of the new message button. */
+  scrollToEndButtonFontSize?: number | string;
+
+  /**
+   * Font size of the new message button.
+   *
+   * @deprecated Since 4.14.0: Renamed to {@linkcode scrollToEndButtonFontSize}.
+   */
+  // TODO: [P4] Will be removed on or after 2023-06-02.
   newMessagesButtonFontSize?: number | string;
+
   transcriptOverlayButtonBackground?: string;
   transcriptOverlayButtonBackgroundOnDisabled?: string;
   transcriptOverlayButtonBackgroundOnFocus?: string;
@@ -484,7 +516,11 @@ type StyleOptions = {
   videoHeight?: number | string;
 };
 
-type StrictStyleOptions = Required<StyleOptions> & {
+// StrictStyleOptions is only used internally in Web Chat and for simplifying our code:
+// 1. Allow developers to set the "bubbleNubOffset" option as "top" (string), but when we normalize them, we will convert it to 0 (number);
+// 2. Renamed/deprecated options, only the newer option will be kept, the older option will be dropped.
+//    Internally, no code should use the deprecated value except the migration code.
+type StrictStyleOptions = Required<Omit<StyleOptions, 'hideScrollToEndButton' | 'newMessagesButtonFontSize'>> & {
   bubbleFromUserNubOffset: number;
   bubbleNubOffset: number;
   emojiSet: false | Record<string, string>;

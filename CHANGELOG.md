@@ -22,11 +22,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Breaking changes
+
+-  A new style option `scrollToEndButtonBehavior` is introduced to control when the scroll to end button should show (formerly "new messages" button):
+   -  `styleOptions.hideScrollToEndButton` has been deprecated. To hide the scroll to end button, set `styleOptions.scrollToEndButtonBehavior` to `false`;
+   -  `styleOptions.newMessageButtonFontSize` has been renamed to `styleOptions.scrollToEndButtonFontSize` to better reflect its purpose.
+
 ### Added
 
 -  Cleanup repo URLs to point to main branch, by [@corinagum](https://github.com/corinagum), in PR [#3870](https://github.com/microsoft/BotFramework-WebChat/pull/3870)
 -  Resolves [#3557](https://github.com/microsoft/BotFramework-WebChat/issues/3557) and [#3736](https://github.com/microsoft/BotFramework-WebChat/issues/3736). Improved test harness and added browser pooling, by [@compulim](https://github.com/compulim), in PR [#3871](https://github.com/microsoft/BotFramework-WebChat/pull/3871)
 -  Resolves [#3788](https://github.com/microsoft/BotFramework-WebChat/issues/3788). Added `localTimestamp` and `localTimezone` (if available) to all outgoing activities, by [@compulim](https://github.com/compulim), in PR [#3896](https://github.com/microsoft/BotFramework-WebChat/pull/3896)
+-  Resolves [#3925](https://github.com/microsoft/BotFramework-WebChat/issues/3925). Added `scrollToEndButtonBehavior` to control when the scroll to end button should show, removed `hideScrollToEndButton`, and renamed `newMessagesButtonFontSize` to `scrollToEndButtonFontSize`, by [@compulim](https://github.com/compulim), in PR [#3926](https://github.com/microsoft/BotFramework-WebChat/issues/3926).
+   -  Values for `scrollToEndButtonBehavior`:
+      -  If unset, will maintain same behavior as previous versions, same as `"unread"`;
+      -  `"unread"` will show when there are any unread and offscreen messages (default);
+      -  `"any"` will show when there are any offscreen messages;
+      -  `false` will always hide the button.
+   -  Added new [`scrollToEndButtonMiddleware`](https://github.com/microsoft/BotFramework-WebChat/blob/main/packages/api/src/types/scrollToEndButtonMiddleware.ts) to customize the appearance of the scroll to end button.
 
 ### Fixed
 
@@ -39,10 +52,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -  Fixes [#3757](https://github.com/microsoft/BotFramework-WebChat/issues/3757). IE11: Send box should not be disabled after pressing <kbd>ESCAPE</kbd> key in the transcript, by [@compulim](https://github.com/compulim), in PR [#3902](https://github.com/microsoft/BotFramework-WebChat/pull/3902)
 -  Fixes [#3901](https://github.com/microsoft/BotFramework-WebChat/issues/3901). IE11: SVG icons for buttons should not be focusable, by [@compulim](https://github.com/compulim), in PR [#3902](https://github.com/microsoft/BotFramework-WebChat/pull/3902)
 -  Fixes [#3825](https://github.com/microsoft/BotFramework-WebChat/issues/3825). Add `role="presentation"` to all decorative `<svg>`, by [@compulim](https://github.com/compulim), in PR [#3903](https://github.com/microsoft/BotFramework-WebChat/pull/3903)
+-  Fixes [#3360](https://github.com/microsoft/BotFramework-WebChat/issues/3360) and [#3615](https://github.com/microsoft/BotFramework-WebChat/issues/3615). Use `channelData['webchat:fallback-text']` field for screen reader text, before stripping Markdown from [`activity.text` field](https://github.com/microsoft/botframework-sdk/blob/main/specs/botframework-activity/botframework-activity.md#text), by [@compulim](https://github.com/compulim), in PR [#3917](https://github.com/microsoft/BotFramework-WebChat/pull/3917)
 
 ### Changed
 
--  Bumped all dependencies to the latest versions and sample bumps, by [@compulim](https://github.com/compulim) in PR [#3831](https://github.com/microsoft/BotFramework-WebChat/pull/3831) and PR [#3846](https://github.com/microsoft/BotFramework-WebChat/pull/3846)
+-  Bumped all dependencies to the latest versions and sample bumps, by [@compulim](https://github.com/compulim) in PR [#3831](https://github.com/microsoft/BotFramework-WebChat/pull/3831), PR [#3846](https://github.com/microsoft/BotFramework-WebChat/pull/3846), and PR [#3917](https://github.com/microsoft/BotFramework-WebChat/pull/3917)
    -  Development dependencies
       -  [`@azure/storage-blob@12.5.0`](https://npmjs.com/package/@azure/storage-blob)
       -  [`@babel/cli@7.13.14`](https://npmjs.com/package/@babel/cli)
@@ -117,8 +131,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
       -  [`adaptivecards@2.9.0`](https://npmjs.com/package/adaptivecards)
       -  [`classnames@2.3.1`](https://npmjs.com/package/classnames)
       -  [`core-js@3.10.0`](https://npmjs.com/package/core-js)
+      -  [`react-dictate-button@2.0.1`](https://npmjs.com/package/react-dictate-button)
       -  [`react-redux@7.2.3`](https://npmjs.com/package/react-redux)
       -  [`redux-devtools-extension@2.13.9`](https://npmjs.com/package/redux-devtools-extension)
+      -  [`sanitize-html@2.4.0`](https://npmjs.com/package/sanitize-html)
       -  [`url-search-params-polyfill@8.1.1`](https://npmjs.com/package/url-search-params-polyfill)
       -  [`whatwg-fetch@3.6.2`](https://npmjs.com/package/whatwg-fetch)
 -  Resolves [#3693](https://github.com/microsoft/BotFramework-WebChat/issues/3693). Bumped to [`microsoft-cognitiveservices-speech-sdk@1.17.0`](https://npmjs.com/package/microsoft-cognitiveservices-speech-sdk), by [@compulim](https://github.com/compulim), in PR [#3907](https://github.com/microsoft/BotFramework-WebChat/pull/3907)

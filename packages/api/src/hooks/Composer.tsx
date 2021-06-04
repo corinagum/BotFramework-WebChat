@@ -3,15 +3,6 @@ import PropTypes from 'prop-types';
 import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import updateIn from 'simple-update-in';
 
-import createCustomEvent from '../utils/createCustomEvent';
-import ErrorBoundary from './utils/ErrorBoundary';
-import getAllLocalizedStrings from '../localization/getAllLocalizedStrings';
-import isObject from '../utils/isObject';
-import normalizeLanguage from '../utils/normalizeLanguage';
-// @ts-ignore
-import PrecompiledGlobalize from '../external/PrecompiledGlobalize';
-import StyleOptions from '../StyleOptions';
-
 import {
   clearSuggestedActions,
   connect as createConnectAction,
@@ -40,23 +31,39 @@ import {
   submitSendBox
 } from 'botframework-webchat-core';
 
+import { default as WebChatAPIContext } from './internal/WebChatAPIContext';
+import ActivityMiddleware from '../types/ActivityMiddleware';
+import createCustomEvent from '../utils/createCustomEvent';
 import createDefaultCardActionMiddleware from './middleware/createDefaultCardActionMiddleware';
 import createDefaultGroupActivitiesMiddleware from './middleware/createDefaultGroupActivitiesMiddleware';
 import defaultSelectVoice from './internal/defaultSelectVoice';
+import DirectLineActivity from '../types/external/DirectLineActivity';
+import DirectLineJSBotConnection from '../types/external/DirectLineJSBotConnection';
+import ErrorBoundary from './utils/ErrorBoundary';
+import getAllLocalizedStrings from '../localization/getAllLocalizedStrings';
+import GroupActivitiesMiddleware from '../types/GroupActivitiesMiddleware';
+import isObject from '../utils/isObject';
+import LocalizedStrings from '../types/LocalizedStrings';
 import mapMap from '../utils/mapMap';
+import normalizeLanguage from '../utils/normalizeLanguage';
+import normalizeStyleOptions from '../normalizeStyleOptions';
 import observableToPromise from './utils/observableToPromise';
+import OneOrMany from '../types/OneOrMany';
+import patchStyleOptionsFromDeprecatedProps from '../patchStyleOptionsFromDeprecatedProps';
+import ScrollToEndButtonMiddleware from '../types/ScrollToEndButtonMiddleware';
+import singleToArray from './utils/singleToArray';
+import StyleOptions from '../StyleOptions';
+import TelemetryMeasurementEvent, { TelemetryExceptionMeasurementEvent } from '../types/TelemetryMeasurementEvent';
 import Tracker from './internal/Tracker';
 import WebChatReduxContext, { useDispatch } from './internal/WebChatReduxContext';
-import { default as WebChatAPIContext } from './internal/WebChatAPIContext';
 
 import applyMiddleware, {
   forLegacyRenderer as applyMiddlewareForLegacyRenderer,
   forRenderer as applyMiddlewareForRenderer
 } from './middleware/applyMiddleware';
 
-import normalizeStyleOptions from '../normalizeStyleOptions';
-import patchStyleOptionsFromDeprecatedProps from '../patchStyleOptionsFromDeprecatedProps';
-import singleToArray from './utils/singleToArray';
+// @ts-ignore
+import PrecompiledGlobalize from '../external/PrecompiledGlobalize';
 
 // List of Redux actions factory we are hoisting as Web Chat functions
 const DISPATCHERS = {
@@ -152,40 +159,50 @@ function mergeStringsOverrides(localizedStrings, language, overrideLocalizedStri
 }
 
 type ComposerProps = {
-  activityMiddleware: any;
-  activityRenderer: any;
-  activityStatusMiddleware: any;
-  activityStatusRenderer: any;
-  attachmentForScreenReaderMiddleware: any;
-  attachmentMiddleware: any;
-  attachmentRenderer: any;
-  avatarMiddleware: any;
-  avatarRenderer: any;
-  cardActionMiddleware: any;
-  children: ReactNode;
-  dir: string;
-  directLine: any;
-  disabled: boolean;
-  downscaleImageToDataURL: any;
-  grammars: any;
-  groupActivitiesMiddleware: any;
-  groupTimestamp: boolean | number;
-  internalErrorBoxClass: any;
-  internalRenderErrorBox: any;
-  locale: string;
-  onTelemetry: any;
-  overrideLocalizedStrings: any;
-  renderMarkdown: any;
-  selectVoice: any;
-  sendTimeout: number;
-  sendTypingIndicator: any;
-  styleOptions: StyleOptions;
-  toastMiddleware: any;
-  toastRenderer: any;
-  typingIndicatorMiddleware: any;
-  typingIndicatorRenderer: any;
-  userID: string;
-  username: string;
+  activityMiddleware?: OneOrMany<ActivityMiddleware>;
+  activityStatusMiddleware?: OneOrMany<Function>;
+  attachmentForScreenReaderMiddleware?: OneOrMany<Function>;
+  attachmentMiddleware?: OneOrMany<Function>;
+  avatarMiddleware?: OneOrMany<Function>;
+  cardActionMiddleware?: OneOrMany<Function>;
+  children?: ReactNode;
+  dir?: string;
+  directLine: DirectLineJSBotConnection;
+  disabled?: boolean;
+  downscaleImageToDataURL?: (blob: Blob, maxWidth: number, maxHeight: number, type: string, quality: number) => string;
+  grammars?: any;
+  groupActivitiesMiddleware?: OneOrMany<GroupActivitiesMiddleware>;
+  internalErrorBoxClass?: React.Component | Function;
+  internalRenderErrorBox?: any;
+  locale?: string;
+  onTelemetry?: (event: TelemetryMeasurementEvent) => void;
+  overrideLocalizedStrings?: LocalizedStrings | ((strings: LocalizedStrings, language: string) => LocalizedStrings);
+  renderMarkdown?: (markdown: string, { markdownRespectCRLF: boolean }, { externalLinkAlt: string }) => string;
+  scrollToEndButtonMiddleware: OneOrMany<ScrollToEndButtonMiddleware>;
+  selectVoice?: (voices: typeof window.SpeechSynthesisVoice[], activity: DirectLineActivity) => void;
+  sendTypingIndicator?: boolean;
+  styleOptions?: StyleOptions;
+  toastMiddleware?: OneOrMany<Function>;
+  typingIndicatorMiddleware?: OneOrMany<Function>;
+  userID?: string;
+  username?: string;
+
+  /** @deprecated Please use "activityMiddleware" instead. */
+  activityRenderer?: any; // TODO: [P4] Remove on or after 2022-06-15.
+  /** @deprecated Please use "activityStatusMiddleware" instead. */
+  activityStatusRenderer?: any; // TODO: [P4] Remove on or after 2022-06-15.
+  /** @deprecated Please use "attachmentMiddleware" instead. */
+  attachmentRenderer?: any; // TODO: [P4] Remove on or after 2022-06-15.
+  /** @deprecated Please use "avatarMiddleware" instead. */
+  avatarRenderer?: any; // TODO: [P4] Remove on or after 2022-06-15.
+  /** @deprecated Please use "styleOptions.groupTimestamp" instead. */
+  groupTimestamp?: boolean | number; // TODO: [P4] Remove on or after 2022-01-01
+  /** @deprecated Please use "styleOptions.sendTimeout" instead. */
+  sendTimeout?: number; // TODO: [P4] Remove on or after 2022-01-01.
+  /** @deprecated Please use "toastMiddleware" instead. */
+  toastRenderer?: any; // TODO: [P4] Remove on or after 2022-06-15.
+  /** @deprecated Please use "typingIndicatorRenderer" instead. */
+  typingIndicatorRenderer?: any; // TODO: [P4] Remove on or after 2022-06-15.
 };
 
 const Composer: FC<ComposerProps> = ({
@@ -212,6 +229,7 @@ const Composer: FC<ComposerProps> = ({
   onTelemetry,
   overrideLocalizedStrings,
   renderMarkdown,
+  scrollToEndButtonMiddleware,
   selectVoice,
   sendTimeout,
   sendTypingIndicator,
@@ -299,7 +317,7 @@ const Composer: FC<ComposerProps> = ({
   }, [patchedLocalizedStrings]);
 
   const trackDimension = useCallback(
-    (name, data) => {
+    (name: string, data: any) => {
       if (!name || typeof name !== 'string') {
         return console.warn('botframework-webchat: Telemetry dimension name must be a string.');
       }
@@ -459,6 +477,17 @@ const Composer: FC<ComposerProps> = ({
     );
   }, [typingIndicatorMiddleware, typingIndicatorRenderer]);
 
+  const scrollToEndButtonRenderer: ScrollToEndButtonMiddleware = useMemo(
+    () =>
+      applyMiddlewareForRenderer(
+        'scroll to end button',
+        { strict: true },
+        ...singleToArray(scrollToEndButtonMiddleware),
+        () => () => () => false
+      )() as any,
+    [scrollToEndButtonMiddleware]
+  );
+
   /**
    * This is a heavy function, and it is expected to be only called when there is a need to recreate business logic, e.g.
    * - User ID changed, causing all send* functions to be updated
@@ -491,6 +520,7 @@ const Composer: FC<ComposerProps> = ({
       localizedStrings: patchedLocalizedStrings,
       onTelemetry,
       renderMarkdown,
+      scrollToEndButtonRenderer,
       selectVoice: patchedSelectVoice,
       sendTypingIndicator,
       styleOptions: patchedStyleOptions,
@@ -525,6 +555,7 @@ const Composer: FC<ComposerProps> = ({
       patchedToastRenderer,
       patchedTypingIndicatorRenderer,
       renderMarkdown,
+      scrollToEndButtonRenderer,
       sendTypingIndicator,
       telemetryDimensionsRef,
       trackDimension,
@@ -554,7 +585,8 @@ const ComposeWithStore: FC<ComposerProps & { store: any }> = ({
     error => {
       console.error('botframework-webchat: Uncaught exception', { error });
 
-      onTelemetry && onTelemetry(createCustomEvent('exception', { error, fatal: true }));
+      onTelemetry &&
+        onTelemetry(createCustomEvent('exception', { error, fatal: true }) as TelemetryExceptionMeasurementEvent);
       setError(error);
     },
     [onTelemetry, setError]
@@ -616,6 +648,7 @@ Composer.defaultProps = {
   onTelemetry: undefined,
   overrideLocalizedStrings: undefined,
   renderMarkdown: undefined,
+  scrollToEndButtonMiddleware: undefined,
   selectVoice: undefined,
   sendTimeout: undefined,
   sendTypingIndicator: false,
@@ -664,6 +697,7 @@ Composer.propTypes = {
   onTelemetry: PropTypes.func,
   overrideLocalizedStrings: PropTypes.oneOfType([PropTypes.any, PropTypes.func]),
   renderMarkdown: PropTypes.func,
+  scrollToEndButtonMiddleware: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.func), PropTypes.func]),
   selectVoice: PropTypes.func,
   sendTimeout: PropTypes.number,
   sendTypingIndicator: PropTypes.bool,
